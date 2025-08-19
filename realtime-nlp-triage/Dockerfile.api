@@ -1,0 +1,25 @@
+﻿FROM python:3.11-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential curl git && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+ENV PIP_NO_CACHE_DIR=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+ENV HF_HOME=/root/.cache/huggingface
+
+# Python deps (close to your local env)
+RUN pip install --upgrade pip && \
+    pip install fastapi uvicorn[standard] pydantic-settings python-dotenv SQLAlchemy==2.* langdetect && \
+    pip install --no-cache-dir "transformers==4.*" && \
+    pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu "torch==2.*" && \
+    pip install spacy==3.7.5 && \
+    python -m spacy download en_core_web_sm
+
+# Copy your app code into the image
+COPY app /app/app
+
+EXPOSE 8000
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD curl -fsS http://localhost:8000/health || exit 1
+
+CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

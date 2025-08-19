@@ -1,0 +1,32 @@
+﻿services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: nlp-api
+    ports:
+      - "8000:8000"
+    environment:
+      - TOX_THRESHOLD=0.5
+      - HF_HOME=/root/.cache/huggingface
+      - DATABASE_URL=sqlite:////data/data.db
+    volumes:
+      - nlp_data:/data
+      - hf_cache:/root/.cache/huggingface
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.dashboard
+    container_name: nlp-dashboard
+    ports:
+      - "8501:8501"
+    environment:
+      - API_URL=http://api:8000
+    depends_on:
+      - api
+
+volumes:
+  nlp_data:
+  hf_cache:
+
