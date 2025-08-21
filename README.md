@@ -20,8 +20,8 @@ It supports both **REST** and **WebSocket** clients and ships with **Docker Comp
   - “Latest messages” table
 
 - **Persistence**
-  - SQLite database stored on a **Docker volume** (recommended)
-  - Hugging Face model cache stored on a **Docker volume** (fast cold starts)
+  - SQLite database stored on a **Docker volume** 
+  - Hugging Face model cache stored on a **Docker volume**
 
 ---
 
